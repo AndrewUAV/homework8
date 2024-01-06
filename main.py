@@ -1,48 +1,53 @@
 from datetime import date, datetime, timedelta
 
-def get_birthdays_per_week(users: list) -> dict:
-    get_date_today = date.today()
-    get_next_week = get_date_today + timedelta(days=7)
 
-    # create dick for birthdays dates
-    get_users_birthdays = {day: [] for day in ["Monday", "Tuesday", "Wednesday", "Thursday",
-                                             "Friday", "Saturday", "Sunday"]}
+def get_birthdays_per_week(users):
+    birthdays = {"Monday": [], "Tuesday": [], "Wednesday": [], "Thursday": [], "Friday": []}
+    days_name = {
+        0: "Monday",
+        1: "Tuesday",
+        2: "Wednesday",
+        3: "Thursday",
+        4: "Friday",
+        5: "Monday",
+        6: "Monday",
+    }
 
-    if not users:
-        return get_users_birthdays
+    current_date = date.today()
+    delta = timedelta(days=6)
+    end_of_week = current_date + delta
+
+    current_year = current_date.year
+    current_month = current_date.month
 
     for user in users:
-        if isinstance(user, dict):
-            birthday = user.get("birthday")
+        birthday = user["birthday"]
+        if current_month == 12 and birthday.month == 1:
+            birthday_to_check = birthday.replace(year=current_year + 1)
+        else:
+            birthday_to_check = birthday.replace(year=current_year)
 
-            if isinstance(birthday, datetime):
-                birthday = birthday.date()
+        if current_date <= birthday_to_check <= end_of_week:
+            name_of_the_day = days_name[birthday_to_check.weekday()]
+            birthdays[name_of_the_day].append(user["name"])
+        else:
+            continue
 
-            # Checking if the birthday has not occurred yet in the current year
-            birthday_this_year = date(get_date_today.year, birthday.month, birthday.day)
+    clean_list_of_birthdays = {}
+    for key, value in birthdays.items():
+        if len(value) > 0:
+            clean_list_of_birthdays[key] = value
 
-            if get_date_today <= birthday_this_year < get_next_week:
-                day_of_week = birthday_this_year.strftime("%A")  # Get the day of the week as a string
-
-                if day_of_week in ["Saturday", "Sunday"]:
-                    day_of_week = "Monday"
-
-                get_users_birthdays[day_of_week].append(user.get("name"))
-
-    # Remove days without birthdays
-    get_users_birthdays = {day: names for day, names in get_users_birthdays.items() if names}
-
-    return get_users_birthdays
-
+    return clean_list_of_birthdays
 
 
 if __name__ == "__main__":
     users = [
-        {"name": "Jan Koum", "birthday": datetime(1976, 1, 1).date()}
+        {"name": "Jan Koum", "birthday": datetime(1976, 1, 1).date()},
     ]
 
     result = get_birthdays_per_week(users)
     print(result)
-
+    # show result
     for day_name, names in result.items():
         print(f"{day_name}: {', '.join(names)}")
