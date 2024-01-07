@@ -1,7 +1,13 @@
-from datetime import date, datetime, timedelta
-
-
-def get_birthdays_per_week(users):
+"""
+This script defines a function to get birthdays per week and provides an example usage.
+"""
+from datetime import date, timedelta
+def get_birthdays_per_week(users: list) -> dict:
+    """
+    Function for get birthdays per week for the given list of users.
+    :param users: List of dictionaries containing user information.
+    :return: A dictionary with weekdays as keys and a list of names as values.
+    """
     birthdays = {"Monday": [], "Tuesday": [], "Wednesday": [], "Thursday": [], "Friday": []}
     days_name = {
         0: "Monday",
@@ -39,15 +45,3 @@ def get_birthdays_per_week(users):
             clean_list_of_birthdays[key] = value
 
     return clean_list_of_birthdays
-
-
-if __name__ == "__main__":
-    users = [
-        {"name": "Jan Koum", "birthday": datetime(1976, 1, 1).date()},
-    ]
-
-    result = get_birthdays_per_week(users)
-    print(result)
-    # show result
-    for day_name, names in result.items():
-        print(f"{day_name}: {', '.join(names)}")
